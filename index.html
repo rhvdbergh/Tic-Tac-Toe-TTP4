@@ -10,6 +10,12 @@
 </head>
 
 <body>
+    <div class="screen screen-start" id="start" style="display: none">
+        <header>
+            <h1>Tic Tac Toe</h1>
+            <a href="#" class="button">Start game</a>
+        </header>
+    </div>
     <div class="board" id="board" style="display: none">
         <header>
             <h1>Tic Tac Toe</h1>
@@ -30,21 +36,20 @@
             <li class="box"></li>
         </ul>
     </div>
-    <div class="screen screen-start" id="start" style="display: none">
+    <div class="screen screen-win" id="finish" style="display: none">
         <header>
             <h1>Tic Tac Toe</h1>
-            <a href="#" class="button">Start game</a>
+            <p class="message"></p>
+            <a href="#" class="button">New game</a>
         </header>
     </div>
     <div class="js_disabled" id="js_disabled">
-
         <p>Please enable JavaScript to play Tic Tac Toe</p>
-
     </div>
-
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="js/app.js"></script>
+
 </body>
 
 </html>
