@@ -10,8 +10,10 @@
     const $startScreen = $('#start');
     const $boardScreen = $('#board');
     const $finishScreen = $('#finish');
+    const $finishMessage = $('.message');
     const $player1 = $('#player1');
     const $player2 = $('#player2');
+    let activePlayer = 1; // player 1 is active; value alternates between 1 and 2    
     const $boxes = $('.boxes');
     // boardArray emulates the board in a three by three pattern
     // using 3 nested arrays
@@ -21,15 +23,40 @@
         [0, 0, 0]
     ];
 
-    let activePlayer = 1; // player 1 is active; value alternates between 1 and 2
 
+    // clears boardArray
+    function clearBoardArray() {
+        boardArray = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ];
+    }
     // draws game board - hides start screen and win screens
+    // essentially, this sets up a new game
     function drawBoard() {
         $startScreen.hide();
         $finishScreen.hide();
         $boardScreen.show();
         $player1.addClass('active');
-        $('.box').addClass('p1');
+        activePlayer = 1;
+        $player2.removeClass('active'); // in case this is left over from previous turn
+        $('.box') // prepares boxes for a new game
+            .addClass('p1')
+            .removeClass('p2')
+            .removeClass('clicked');
+        $('.box')
+            .removeClass('box-filled-1')
+            .removeClass('box-filled-2');
+
+        clearBoardArray();
+
+        // clear finish screen message and classes, if left over from previous game
+        $finishMessage.text('');
+        $finishScreen
+            .removeClass('screen-win-one')
+            .removeClass('screen-win-two')
+            .removeClass('screen-win-tie');
     }
 
     // toggles player between 1 and 2
@@ -112,6 +139,24 @@
         boardArray[row][col] = p;
     }
 
+    function endScreen(gameState) {
+        $boardScreen.hide();
+
+        if (gameState === 1) {
+            $finishScreen.addClass('screen-win-one');
+            $finishMessage.text('Winner');
+        } else if (gameState === 2) {
+            $finishScreen.addClass('screen-win-two');
+            $finishMessage.text('Winner');
+        } else if (gameState === 0) {
+            $finishScreen.addClass('screen-win-tie');
+            $finishMessage.text('It\'s a tie!');
+        }
+
+        $finishScreen.show();
+
+    }
+
     // INITIAL SETUP
 
     // remove the JavaScript disabled message
@@ -130,6 +175,15 @@
         }
     });
 
+    // event handler for finish button on #finish
+    $finishScreen.on('click', (event) => {
+
+        if (event.target.className === "button") { // button clicked
+            const button = event.target;
+            drawBoard();
+        }
+    });
+
     // $boxes.hover((event) => { console.log(event.target); }, (event) => {});
 
     // event handler for game board boxes    
@@ -137,7 +191,6 @@
         const box = event.target;
 
         if (!($(box).hasClass('clicked'))) {
-            // console.log(box.id);
             if (activePlayer === 1) {
                 $(box).addClass('box-filled-1');
             } else {
@@ -151,8 +204,9 @@
             addTokenToBoard(activePlayer, index);
 
             const gameState = testForFinish();
-            if (gameState > 0) {
+            if (gameState >= 0) {
                 console.log('game over');
+                endScreen(gameState);
             } else {
                 togglePlayer();
             }
