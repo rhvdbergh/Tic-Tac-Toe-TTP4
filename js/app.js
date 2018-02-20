@@ -6,20 +6,35 @@
 
 // main app module, to keep names from cluttering global namespace
 ! function() {
+
+
+    const $startScreen = $('#start');
+    const $board = $('#board');
+    const $finishScreen = $('#finish');
+
     // draws game board - hides start screen and win screens
+    function drawBoard() {
+        $startScreen.hide();
+        $finishScreen.hide();
+        $board.show();
+    }
+
+    // INITIAL SETUP
 
     // remove the JavaScript disabled message
     $('#js_disabled').hide();
 
-    $('#start').show();
+    $startScreen.show();
 
+    // EVENT HANDLERS
 
-    function drawBoard() {
-        $('#start').hide();
-        $('#finish').hide();
-        $('#board').show();
-    }
+    // event handler for start button on #start
+    $startScreen.on('click', (event) => {
 
-    // drawBoard();
+        if (event.target.className === "button") { // button clicked
+            const button = event.target;
+            drawBoard();
+        }
 
+    });
 }();
