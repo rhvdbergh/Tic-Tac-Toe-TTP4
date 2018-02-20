@@ -27,8 +27,16 @@
 
     // toggles player between 1 and 2
     function togglePlayer() {
-        if (activePlayer === 1) activePlayer = 2
-        else activePlayer = 1;
+        if (activePlayer === 1) {
+            activePlayer = 2;
+            $player1.removeClass('active');
+            $player2.addClass('active');
+        } else {
+            activePlayer = 1;
+            $player2.removeClass('active');
+            $player1.addClass('active');
+
+        }
     }
 
     // INITIAL SETUP
