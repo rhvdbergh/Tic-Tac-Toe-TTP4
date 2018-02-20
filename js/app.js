@@ -77,7 +77,7 @@
             if (testCombination(0, 0, 1, 0, 2, 0, player)) return player;
             if (testCombination(0, 0, 1, 1, 2, 2, player)) return player;
 
-            if (testCombination(0, 1, 1, 1, 1, 2, player)) return player;
+            if (testCombination(0, 1, 1, 1, 2, 1, player)) return player;
 
             if (testCombination(0, 2, 1, 1, 2, 0, player)) return player;
             if (testCombination(0, 2, 1, 2, 2, 2, player)) return player;
@@ -137,7 +137,7 @@
         const box = event.target;
 
         if (!($(box).hasClass('clicked'))) {
-            console.log(box.id);
+            // console.log(box.id);
             if (activePlayer === 1) {
                 $(box).addClass('box-filled-1');
             } else {
@@ -150,7 +150,8 @@
             const index = $(box).index();
             addTokenToBoard(activePlayer, index);
 
-            if (testForFinish() > 0) {
+            const gameState = testForFinish();
+            if (gameState > 0) {
                 console.log('game over');
             } else {
                 togglePlayer();
