@@ -56,10 +56,56 @@
     }
 
     // tests if the game is over
-    // returns the winner; 0 = draw, 1 = player 1, 2 = player 2
+    // returns the winner; -1 = game in progress, 0 = draw, 
+    // 1 = player 1, 2 = player 2
     function testForFinish() {
 
-        return 0;
+        // player 1 = o, player 2 = x
+        // first, we test all player 1's tokens to see if three is in a line
+        // then, if the test has not returned anything, test for player 2
+        // finally, check if there is a draw
+        for (let player = 1; player < 3; player++) {
+            // test for all possible combinations of player tokens that can possible line up in 3
+            if (boardArray[0][0] === player && boardArray[0][1] === player && boardArray[0][2] === player) {
+                return player;
+            }
+            if (boardArray[0][0] === player && boardArray[1][0] === player && boardArray[2][0] === player) {
+                return player;
+            }
+            if (boardArray[0][0] === player && boardArray[1][1] === player && boardArray[2][2] === player) {
+                return player;
+            }
+
+            if (boardArray[0][1] === player && boardArray[1][1] === player && boardArray[1][2] === player) {
+                return player;
+            }
+
+            if (boardArray[0][2] === player && boardArray[1][1] === player && boardArray[2][0] === player) {
+                return player;
+            }
+            if (boardArray[0][2] === player && boardArray[1][2] === player && boardArray[2][2] === player) {
+                return player;
+            }
+
+            if (boardArray[1][0] === player && boardArray[1][1] === player && boardArray[1][2] === player) {
+                return player;
+            }
+
+            if (boardArray[2][0] === player && boardArray[2][1] === player && boardArray[2][2] === player) {
+                return player;
+            }
+        }
+
+        // if the test is at this point, the game must still be in progress
+        return -1;
+    }
+
+    // p = player, the index is the index of the 0-indexed element in the DOM
+    function addTokenToBoard(p, index) {
+
+        let row = (index - (index % 3)) / 3;
+        let col = (index % 3);
+        boardArray[row][col] = p;
     }
 
     // INITIAL SETUP
@@ -96,7 +142,15 @@
 
             $(box).addClass('clicked');
 
-            togglePlayer();
+            // place the token "on the board" by adding it to the boardArray
+            const index = $(box).index();
+            addTokenToBoard(activePlayer, index);
+
+            if (testForFinish() > 0) {
+                console.log('game over');
+            } else {
+                togglePlayer();
+            }
         };
     });
 
