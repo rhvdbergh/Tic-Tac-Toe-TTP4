@@ -173,7 +173,7 @@ h1 {
 
 .boxes {
     width: 480px;
-    margin: 3em auto 0;
+    margin: 10em auto 0;
 }
 
 .boxes .box {
@@ -230,4 +230,33 @@ h1 {
 .name_label {
     margin: 0em;
     border-radius: 2px;
+}
+
+.name_display {
+    font-size: 2.5em;
+    color: black;
+    display: block;
+    position: absolute;
+    margin-top: 1em;
+    margin-bottom: 5em;
+    padding-bottom: 5em;
+    opacity: 0.1;
+    font-weight: 800;
+}
+
+#p1_name_display {
+    left: 5%;
+    color: #FFA000;
+    transition: 1s;
+}
+
+#p2_name_display {
+    right: 5%;
+    color: #3688C3;
+    transition: 1s;
+}
+
+#p1_name_display.active,
+#p2_name_display.active {
+    opacity: 1;
 }

@@ -19,6 +19,8 @@
     const $enterNameFormP2 = $('#name_input_form_p2');
     const $player1 = $('#player1');
     const $player2 = $('#player2');
+    const $displayNameP1 = $('#p1_name_display');
+    const $displayNameP2 = $('#p2_name_display');
     let activePlayer = 1; // player 1 is active; value alternates between 1 and 2  
     let playerOneName = 'Player 1';
     let playerTwoName = 'Player 2';
@@ -49,8 +51,10 @@
         $finishScreen.hide();
         $boardScreen.show();
         $player1.addClass('active');
+        $displayNameP1.addClass('active');
         activePlayer = 1;
         $player2.removeClass('active'); // in case this is left over from previous turn
+        $displayNameP2.removeClass('active');
         $('.box') // prepares boxes for a new game
             .addClass('p1')
             .removeClass('p2')
@@ -74,7 +78,9 @@
         if (activePlayer === 1) {
             activePlayer = 2;
             $player1.removeClass('active');
+            $displayNameP1.removeClass('active');
             $player2.addClass('active');
+            $displayNameP2.addClass('active');
             $('.box').each(function(i, box) {
                 if (!($(box).hasClass('clicked'))) {
                     $(box).removeClass('p1').addClass('p2');
@@ -83,7 +89,9 @@
         } else {
             activePlayer = 1;
             $player2.removeClass('active');
+            $displayNameP2.removeClass('active');
             $player1.addClass('active');
+            $displayNameP1.addClass('active');
             $('.box').each(function(i, box) {
                 if (!($(box).hasClass('clicked'))) {
                     $(box).removeClass('p2').addClass('p1');
@@ -176,6 +184,14 @@
         $enterNameInputBoxP1.focus();
     }
 
+    // trims the player's name to 13 letters, to fit in on screen
+    function trimName(name) {
+        if (name.length > 13) {
+            return name.substring(0, 13);
+        }
+        return name;
+    }
+
     // INITIAL SETUP
 
     // remove the JavaScript disabled message
@@ -203,7 +219,10 @@
     $enterNameFormP1.on('submit', (event) => {
         event.preventDefault();
         playerOneName = $enterNameInputBoxP1.val();
+        playerOneName = trimName(playerOneName);
+        $displayNameP1.text(playerOneName);
         if (!twoPlayerGame) {
+            $displayNameP2.text("Computer");
             drawBoard();
         } else { // this is a two player game, so set up screen for player two name entry
             $enterNameScreenP1.hide();
@@ -216,6 +235,8 @@
     $enterNameFormP2.on('submit', (event) => {
         event.preventDefault();
         playerTwoName = $enterNameInputBoxP2.val();
+        playerTwoName = trimName(playerTwoName);
+        $displayNameP2.text(playerTwoName);
         drawBoard();
         console.log('p1: ', playerOneName, 'p2: ', playerTwoName);
     });
