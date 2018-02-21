@@ -23,7 +23,7 @@
     const $displayNameP2 = $('#p2_name_display');
     let activePlayer = 1; // player 1 is active; value alternates between 1 and 2  
     let playerOneName = 'Player 1';
-    let playerTwoName = 'Player 2';
+    let playerTwoName = 'Computer';
     let twoPlayerGame = false; // boolean for keeping track if game has one or two players
     const $boxes = $('.boxes');
     // boardArray emulates the board in a three by three pattern
@@ -163,10 +163,10 @@
 
         if (gameState === 1) {
             $finishScreen.addClass('screen-win-one');
-            $finishMessage.text('Winner');
+            $finishMessage.text(`${playerOneName} wins!`);
         } else if (gameState === 2) {
             $finishScreen.addClass('screen-win-two');
-            $finishMessage.text('Winner');
+            $finishMessage.text(`${playerTwoName} wins!`);
         } else if (gameState === 0) {
             $finishScreen.addClass('screen-win-tie');
             $finishMessage.text('It\'s a Tie!');
