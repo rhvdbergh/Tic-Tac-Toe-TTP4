@@ -126,7 +126,6 @@
         if (count === 9) {
             return 0;
         }
-
         // if the test is at this point, the game must still be in progress
         return -1;
     }
@@ -150,11 +149,9 @@
             $finishMessage.text('Winner');
         } else if (gameState === 0) {
             $finishScreen.addClass('screen-win-tie');
-            $finishMessage.text('It\'s a tie!');
+            $finishMessage.text('It\'s a Tie!');
         }
-
         $finishScreen.show();
-
     }
 
     // INITIAL SETUP
