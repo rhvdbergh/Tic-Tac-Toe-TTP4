@@ -24,6 +24,7 @@ h1 {
     box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
     display: inline-block;
     padding: 1.25em 3em;
+    margin: 0 0.75em;
     text-decoration: none;
     -webkit-transition: 0.25s ease;
     transition: 0.25s ease;
@@ -64,6 +65,10 @@ h1 {
 
 .screen-start .button {
     color: #54D17A;
+    display: block;
+    width: 30%;
+    margin: auto;
+    margin-top: 2em;
 }
 
 .screen-start h1+.button {
@@ -208,4 +213,21 @@ h1 {
 
 .p2:hover {
     background-image: url(../img/x.svg);
+}
+
+#name_input_p1,
+#name_input_p2,
+.name_label {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    padding: 0.75em;
+    margin: 4em 0em;
+    text-decoration: none;
+}
+
+.name_label {
+    margin: 0em;
+    border-radius: 2px;
 }

@@ -11,9 +11,18 @@
     const $boardScreen = $('#board');
     const $finishScreen = $('#finish');
     const $finishMessage = $('.message');
+    const $enterNameScreenP1 = $('#enter_name_p1');
+    const $enterNameInputBoxP1 = $('#name_input_p1');
+    const $enterNameFormP1 = $('#name_input_form_p1');
+    const $enterNameScreenP2 = $('#enter_name_p2');
+    const $enterNameInputBoxP2 = $('#name_input_p2');
+    const $enterNameFormP2 = $('#name_input_form_p2');
     const $player1 = $('#player1');
     const $player2 = $('#player2');
-    let activePlayer = 1; // player 1 is active; value alternates between 1 and 2    
+    let activePlayer = 1; // player 1 is active; value alternates between 1 and 2  
+    let playerOneName = 'Player 1';
+    let playerTwoName = 'Player 2';
+    let twoPlayerGame = false; // boolean for keeping track if game has one or two players
     const $boxes = $('.boxes');
     // boardArray emulates the board in a three by three pattern
     // using 3 nested arrays
@@ -22,7 +31,6 @@
         [0, 0, 0],
         [0, 0, 0]
     ];
-
 
     // clears boardArray
     function clearBoardArray() {
@@ -36,6 +44,8 @@
     // essentially, this sets up a new game
     function drawBoard() {
         $startScreen.hide();
+        $enterNameScreenP1.hide();
+        $enterNameScreenP2.hide();
         $finishScreen.hide();
         $boardScreen.show();
         $player1.addClass('active');
@@ -131,13 +141,15 @@
     }
 
     // p = player, the index is the index of the 0-indexed element in the DOM
+    // the row and column are determined using the mod operator
     function addTokenToBoard(p, index) {
 
         let row = (index - (index % 3)) / 3;
         let col = (index % 3);
-        boardArray[row][col] = p;
+        boardArray[row][col] = p; // update the boardArray to contain player's token
     }
 
+    // 
     function endScreen(gameState) {
         $boardScreen.hide();
 
@@ -154,6 +166,16 @@
         $finishScreen.show();
     }
 
+    function getPlayerName() {
+        if (!twoPlayerGame) {
+            $enterNameInputBoxP1.attr('placeholder', 'Enter player name ...');
+        } else {
+            $enterNameInputBoxP1.attr('placeholder', 'Enter player one name ...');
+        }
+        $enterNameScreenP1.show();
+        $enterNameInputBoxP1.focus();
+    }
+
     // INITIAL SETUP
 
     // remove the JavaScript disabled message
@@ -168,8 +190,34 @@
 
         if (event.target.className === "button") { // button clicked
             const button = event.target;
-            drawBoard();
+            if (button.textContent === "Start 1 player game") {
+                twoPlayerGame = false;
+            } else {
+                twoPlayerGame = true;
+            }
+            getPlayerName();
         }
+    });
+
+    // event handler for player one enter name form
+    $enterNameFormP1.on('submit', (event) => {
+        event.preventDefault();
+        playerOneName = $enterNameInputBoxP1.val();
+        if (!twoPlayerGame) {
+            drawBoard();
+        } else { // this is a two player game, so set up screen for player two name entry
+            $enterNameScreenP1.hide();
+            $enterNameInputBoxP2.attr('placeholder', 'Enter player two name ...');
+            $enterNameScreenP2.show();
+            $enterNameInputBoxP2.focus();
+        }
+    });
+    // event handler for player two enter name form
+    $enterNameFormP2.on('submit', (event) => {
+        event.preventDefault();
+        playerTwoName = $enterNameInputBoxP2.val();
+        drawBoard();
+        console.log('p1: ', playerOneName, 'p2: ', playerTwoName);
     });
 
     // event handler for finish button on #finish
@@ -177,7 +225,8 @@
 
         if (event.target.className === "button") { // button clicked
             const button = event.target;
-            drawBoard();
+            $finishScreen.hide();
+            $startScreen.show();
         }
     });
 
