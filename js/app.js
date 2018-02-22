@@ -24,6 +24,7 @@
     let activePlayer = 1; // player 1 is active; value alternates between 1 and 2  
     let playerOneName = 'Player 1';
     let playerTwoName = 'Computer';
+    let gameState = -1; // game is still in progress
     let twoPlayerGame = false; // boolean for keeping track if game has one or two players
     const $boxes = $('.boxes');
     // boardArray emulates the board in a three by three pattern
@@ -111,13 +112,7 @@
                 }
             }
         }
-
-        console.log('empty boxes: ', emptyBoxes);
         return emptyBoxes;
-    }
-
-    function minimax() {
-
     }
 
     // tests if the game is over
@@ -170,9 +165,8 @@
         boardArray[row][col] = p; // update the boardArray to contain player's token
     }
 
-    // 
-    function endScreen(gameState) {
-        $boardScreen.hide();
+    // shows end screen with player's name / tie message
+    function endScreen() {
 
         if (gameState === 1) {
             $finishScreen.addClass('screen-win-one');
@@ -184,7 +178,15 @@
             $finishScreen.addClass('screen-win-tie');
             $finishMessage.text('It\'s a Tie!');
         }
-        $finishScreen.show();
+
+        $boxes.css('opacity', '0.2');
+
+        setTimeout(() => { // delay the end screen for 1s to see final move
+            $boardScreen.hide();
+            $boxes.css('opacity', '1');
+            $finishScreen.show();
+            gameState = -1; // reset for new game
+        }, 3000);
     }
 
     function getPlayerName() {
@@ -264,33 +266,65 @@
         }
     });
 
-    // $boxes.hover((event) => { console.log(event.target); }, (event) => {});
+    // makes a random move by the computer
+    function computerMove() {
+        // find all available moves by computer
+        const options = findEmptyBoxes();
+        const allBoxes = $('.box');
+        // picks a random option
+        let choice = Math.round(Math.random() * (options.length - 1));
+
+        // convert the coordinates to the n-th number box to get the index in $('.box')
+        const index = (options[choice][0] * 3) + options[choice][1];
+
+        $(allBoxes[index]).addClass('clicked box-filled-2');
+        addTokenToBoard(activePlayer, index); // computer will always be player 2
+
+        gameState = testForFinish();
+        if (gameState >= 0) {
+            console.log('game over');
+            endScreen();
+        } else {
+            togglePlayer();
+        }
+    }
 
     // event handler for game board boxes    
     $boxes.on('click', (event) => {
-        const box = event.target;
+        // only run logic if game is still in progress
+        // otherwise user would still be able to click when game is over
+        if (gameState === -1) {
+            const box = event.target;
 
-        if (!($(box).hasClass('clicked'))) {
-            if (activePlayer === 1) {
-                $(box).addClass('box-filled-1');
-            } else {
-                $(box).addClass('box-filled-2');
+            if (!($(box).hasClass('clicked'))) {
+                if (activePlayer === 1) {
+                    $(box).addClass('box-filled-1');
+                } else {
+                    $(box).addClass('box-filled-2');
+                }
+
+                $(box).addClass('clicked');
+
+                // place the token "on the board" by adding it to the boardArray
+                const index = $(box).index();
+                addTokenToBoard(activePlayer, index);
+
+                gameState = testForFinish();
+                if (gameState >= 0) {
+                    console.log('game over');
+                    endScreen();
+                } else {
+                    togglePlayer();
+                    // if this is a two player game, make the computer move
+                    // after the computer moved, if the game is not over, the 
+                    // human player will again become the active player
+                    if (!twoPlayerGame) {
+                        computerMove();
+                    }
+                }
             }
+        }
 
-            $(box).addClass('clicked');
-
-            // place the token "on the board" by adding it to the boardArray
-            const index = $(box).index();
-            addTokenToBoard(activePlayer, index);
-
-            const gameState = testForFinish();
-            if (gameState >= 0) {
-                console.log('game over');
-                endScreen(gameState);
-            } else {
-                togglePlayer();
-            }
-        };
     });
 
 }();
