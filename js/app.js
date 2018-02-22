@@ -100,6 +100,26 @@
         }
     }
 
+    // returns an array with coordinates of empty boxes
+    // check all the boxes, and if empty (value = 0), add to the array to return
+    function findEmptyBoxes() {
+        let emptyBoxes = [];
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (boardArray[i][j] === 0) {
+                    emptyBoxes.push([i, j]);
+                }
+            }
+        }
+
+        console.log('empty boxes: ', emptyBoxes);
+        return emptyBoxes;
+    }
+
+    function minimax() {
+
+    }
+
     // tests if the game is over
     // returns the winner; -1 = game in progress, 0 = draw, 
     // 1 = player 1, 2 = player 2
@@ -132,18 +152,11 @@
             if (testCombination(2, 0, 2, 1, 2, 2, player)) return player;
         }
 
-        // test for a draw
-        // a draw is when all the boxes have tokens on them but no one won
-        // so nine tokens have been placed
-        let count = 0;
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
-                if (boardArray[i][j] > 0) count++;
-            }
-        }
-        if (count === 9) {
+        // if there are no empty boxes left, the game is a draw
+        if (findEmptyBoxes().length === 0) {
             return 0;
         }
+
         // if the test is at this point, the game must still be in progress
         return -1;
     }
