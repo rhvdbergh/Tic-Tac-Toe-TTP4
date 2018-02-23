@@ -181,7 +181,7 @@
 
         $boxes.css('opacity', '0.2');
 
-        setTimeout(() => { // delay the end screen for 1s to see final move
+        setTimeout(() => { // delay the end screen to see final move
             $boardScreen.hide();
             $boxes.css('opacity', '1');
             $finishScreen.show();
@@ -189,7 +189,7 @@
             if (!twoPlayerGame) {
                 playerTwoName = "Player 2"; // reset in case next game is a 2 player game
             }
-        }, 3000);
+        }, 2500);
     }
 
     function getPlayerName() {
@@ -280,15 +280,18 @@
         // convert the coordinates to the n-th number box to get the index in $('.box')
         const index = (options[choice][0] * 3) + options[choice][1];
 
-        $(allBoxes[index]).addClass('clicked box-filled-2');
-        addTokenToBoard(activePlayer, index); // computer will always be player 2
+        setTimeout(() => { // wait to make it appear as if computer is thinking
+            $(allBoxes[index]).addClass('clicked box-filled-2');
+            addTokenToBoard(activePlayer, index); // computer will always be player 2
 
-        gameState = testForFinish();
-        if (gameState >= 0) {
-            endScreen();
-        } else {
-            togglePlayer();
-        }
+            gameState = testForFinish();
+            if (gameState >= 0) {
+                endScreen();
+            } else {
+                togglePlayer();
+            }
+        }, 1500); // end timeout
+
     }
 
     // event handler for game board boxes    
