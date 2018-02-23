@@ -23,7 +23,7 @@
     const $displayNameP2 = $('#p2_name_display');
     let activePlayer = 1; // player 1 is active; value alternates between 1 and 2  
     let playerOneName = 'Player 1';
-    let playerTwoName = 'Computer';
+    let playerTwoName = 'Player 2';
     let gameState = -1; // game is still in progress
     let twoPlayerGame = false; // boolean for keeping track if game has one or two players
     const $boxes = $('.boxes');
@@ -186,6 +186,9 @@
             $boxes.css('opacity', '1');
             $finishScreen.show();
             gameState = -1; // reset for new game
+            if (!twoPlayerGame) {
+                playerTwoName = "Player 2"; // reset in case next game is a 2 player game
+            }
         }, 3000);
     }
 
@@ -238,6 +241,7 @@
         $displayNameP1.text(playerOneName);
         if (!twoPlayerGame) {
             $displayNameP2.text("Computer");
+            playerTwoName = "Computer";
             drawBoard();
         } else { // this is a two player game, so set up screen for player two name entry
             $enterNameScreenP1.hide();
@@ -253,7 +257,6 @@
         playerTwoName = trimName(playerTwoName);
         $displayNameP2.text(playerTwoName);
         drawBoard();
-        console.log('p1: ', playerOneName, 'p2: ', playerTwoName);
     });
 
     // event handler for finish button on #finish
@@ -282,7 +285,6 @@
 
         gameState = testForFinish();
         if (gameState >= 0) {
-            console.log('game over');
             endScreen();
         } else {
             togglePlayer();
@@ -311,7 +313,6 @@
 
                 gameState = testForFinish();
                 if (gameState >= 0) {
-                    console.log('game over');
                     endScreen();
                 } else {
                     togglePlayer();
