@@ -103,11 +103,11 @@
 
     // returns an array with coordinates of empty boxes
     // check all the boxes, and if empty (value = 0), add to the array to return
-    function findEmptyBoxes() {
+    function findEmptyBoxes(testBoard) {
         let emptyBoxes = [];
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
-                if (boardArray[i][j] === 0) {
+                if (testBoard[i][j] === 0) {
                     emptyBoxes.push([i, j]);
                 }
             }
@@ -118,11 +118,11 @@
     // tests if the game is over
     // returns the winner; -1 = game in progress, 0 = draw, 
     // 1 = player 1, 2 = player 2
-    function testForFinish() {
+    function testForFinish(testBoard) {
 
         // tests a given combination of 3 co-ordinates in the 2d array to see if they all contain p(layer)
         function testCombination(r1, c1, r2, c2, r3, c3, p) {
-            if (boardArray[r1][c1] === p && boardArray[r2][c2] === p && boardArray[r3][c3] === p) {
+            if (testBoard[r1][c1] === p && testBoard[r2][c2] === p && testBoard[r3][c3] === p) {
                 return true;
             }
             return false;
@@ -148,7 +148,7 @@
         }
 
         // if there are no empty boxes left, the game is a draw
-        if (findEmptyBoxes().length === 0) {
+        if (findEmptyBoxes(testBoard).length === 0) {
             return 0;
         }
 
@@ -156,7 +156,9 @@
         return -1;
     }
 
-    // p = player, the index is the index of the 0-indexed element in the DOM
+    // board = the current board (hypothetical for possible computer moves, but
+    // pass boardArray for "real" moves), p = player, the index is the index of 
+    // the 0-indexed element in the DOM
     // the row and column are determined using the mod operator
     function addTokenToBoard(p, index) {
 
@@ -208,6 +210,92 @@
             return name.substring(0, 13);
         }
         return name;
+    }
+
+    // findEmptyBoxes() returns coordinates; convert this to the n-th number box's index
+    function convertCoordinatesToIndex(coord) { // coord is an array of length 2 containing row, col coord
+        // multiply row by three, then add column
+        return (coord[0] * 3) + coord[1];
+    }
+
+
+    // using the minimax algorithm, the function returns the best available move
+    function findBestMove(boardState, player) {
+
+        // an array to store possible scores in for each move
+        let scores = [];
+
+        let testState = testForFinish(boardState);
+
+        // first we test to see whether the hypothetical game is over
+        // if so, return the score that this game ended in
+        if (testState === 1) { // the game is over, the human player has won
+            return -1; // add -1 to the score for this round
+        } else if (testState === 2) {
+            return 1; // add 1 to the score for this round
+        } else if (testState === 0) { // it's a tie
+            return 0; // add 0 to the score for this round
+        }
+
+        findEmptyBoxes(boardState).forEach(box => {
+            // make a hypothetical move on the current state of the board
+
+            let newBoardState = [ // new board
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0]
+            ];
+
+            // copy everything in the previous array to the new board
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    newBoardState[i][j] = boardState[i][j];
+                }
+            }
+
+            newBoardState[box[0]][box[1]] = player;
+
+            // switch the player to the opposite player
+            let oppositePlayer = 1;
+            if (player === 1) {
+                oppositePlayer = 2;
+            } else {
+                oppositePlayer = 1;
+            }
+
+            scores.push(findBestMove(newBoardState, oppositePlayer));
+        });
+
+        console.log(scores);
+
+    }
+
+    // makes a random move by the computer
+    function computerMove() {
+
+        // find all available moves by computer
+        const options = findEmptyBoxes(boardArray);
+        const allBoxes = $('.box');
+        // picks a random option
+        let choice = Math.round(Math.random() * (options.length - 1));
+
+        findBestMove(boardArray, activePlayer);
+
+        // convert the coordinates to the n-th number box to get the index in $('.box')
+        const index = convertCoordinatesToIndex(options[choice]);
+
+        setTimeout(() => { // wait to make it appear as if computer is thinking
+            $(allBoxes[index]).addClass('clicked box-filled-2');
+            addTokenToBoard(activePlayer, index); // computer will always be player 2
+
+            gameState = testForFinish(boardArray);
+            if (gameState >= 0) {
+                endScreen();
+            } else {
+                togglePlayer();
+            }
+        }, 1500); // end timeout
+
     }
 
     // INITIAL SETUP
@@ -269,31 +357,6 @@
         }
     });
 
-    // makes a random move by the computer
-    function computerMove() {
-        // find all available moves by computer
-        const options = findEmptyBoxes();
-        const allBoxes = $('.box');
-        // picks a random option
-        let choice = Math.round(Math.random() * (options.length - 1));
-
-        // convert the coordinates to the n-th number box to get the index in $('.box')
-        const index = (options[choice][0] * 3) + options[choice][1];
-
-        setTimeout(() => { // wait to make it appear as if computer is thinking
-            $(allBoxes[index]).addClass('clicked box-filled-2');
-            addTokenToBoard(activePlayer, index); // computer will always be player 2
-
-            gameState = testForFinish();
-            if (gameState >= 0) {
-                endScreen();
-            } else {
-                togglePlayer();
-            }
-        }, 1500); // end timeout
-
-    }
-
     // event handler for game board boxes    
     $boxes.on('click', (event) => {
         // only run logic if game is still in progress
@@ -314,7 +377,7 @@
                 const index = $(box).index();
                 addTokenToBoard(activePlayer, index);
 
-                gameState = testForFinish();
+                gameState = testForFinish(boardArray);
                 if (gameState >= 0) {
                     endScreen();
                 } else {
