@@ -66,8 +66,6 @@
             .removeClass('box-filled-1')
             .removeClass('box-filled-2');
 
-        console.log(boardArray);
-
         clearBoardArray();
 
         // // for testing - to make a pre-loaded board scenario visible for testing
@@ -307,17 +305,47 @@
             let lowestScore = Math.min(...scores);
             let bestMoveIndex = scores.indexOf(lowestScore);
             bestMove = moves[bestMoveIndex];
-            console.log('best move for human', bestMove);
             return lowestScore;
         }
+    }
+
+    // because findBestMove() returns the FIRST best move, 
+    // it is necessary to check whether the computer can actually win this round
+    function canComputerWin(testBoard) {
+        findEmptyBoxes(testBoard).forEach(box => {
+
+            let newBoardState = [ // new board
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0]
+            ];
+
+            // copy everything in the previous array to the new board
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    newBoardState[i][j] = testBoard[i][j];
+                }
+            }
+
+            // make a hypothetical move on the current state of the board
+            // by assigning the player's number to the current box under
+            // evaluation            
+            newBoardState[box[0]][box[1]] = activePlayer; // the computer will always be player 2
+            if (testForFinish(newBoardState) === activePlayer) {
+                return convertCoordinatesToIndex(box); // this move will make the computer win, return as index
+            }
+        });
+        return -1; // if the computer can't win, -1 is returned
     }
 
     // makes the best move possible by the computer
     function computerMove() {
 
-        findBestMove(); // finds best move and stores the (first) best option in the bestMove variable
-
-        const index = convertCoordinatesToIndex(bestMove);
+        let index = canComputerWin(boardArray);
+        if (index === -1) { // no need to run findBestMove - minimax algorithm if the computer will win this roun
+            findBestMove(boardArray, activePlayer); // finds best move and stores the (first) best option in the bestMove variable
+            index = convertCoordinatesToIndex(bestMove);
+        }
 
         setTimeout(() => { // wait to make it appear as if computer is thinking
             $($allBoxes[index]).addClass('clicked box-filled-2');
