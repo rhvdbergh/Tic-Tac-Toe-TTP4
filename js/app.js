@@ -26,7 +26,9 @@
     let playerTwoName = 'Player 2';
     let gameState = -1; // game is still in progress
     let twoPlayerGame = false; // boolean for keeping track if game has one or two players
+    let bestMove = [2, 2]; // a variable to store the best move chosen by the computer
     const $boxes = $('.boxes');
+    const $allBoxes = $('.box');
     // boardArray emulates the board in a three by three pattern
     // using 3 nested arrays
     let boardArray = [
@@ -64,7 +66,22 @@
             .removeClass('box-filled-1')
             .removeClass('box-filled-2');
 
+        console.log(boardArray);
+
         clearBoardArray();
+
+        // // for testing - to make a pre-loaded board scenario visible for testing
+        // const allBoxes = $('.box');
+        // for (let i = 0; i < 3; i++) {
+        //     for (let j = 0; j < 3; j++) {
+        //         if (boardArray[i][j] === 1) {
+        //             $($allBoxes[convertCoordinatesToIndex([i, j])]).addClass('box-filled-1');
+        //         } else if (boardArray[i][j] === 2) {
+        //             $($allBoxes[convertCoordinatesToIndex([i, j])]).addClass('box-filled-2');
+
+        //         }
+        //     }
+        // }
 
         // clear finish screen message and classes, if left over from previous game
         $finishMessage.text('');
@@ -212,7 +229,7 @@
         return name;
     }
 
-    // findEmptyBoxes() returns coordinates; convert this to the n-th number box's index
+    // findEmptyBoxes() returns coordinates; convert this to the n-th number box's index of all 9 boxes
     function convertCoordinatesToIndex(coord) { // coord is an array of length 2 containing row, col coord
         // multiply row by three, then add column
         return (coord[0] * 3) + coord[1];
@@ -220,25 +237,33 @@
 
 
     // using the minimax algorithm, the function returns the best available move
+    // the n-th number of all 9 box's index is returned 
     function findBestMove(boardState, player) {
 
         // an array to store possible scores in for each move
-        let scores = [];
+        let scores = []; // this will hold all the possible scores for each state
+        let moves = []; // this will hold all the moves made in that state
+        // scores and moves will be incremented together, so the box with the best move can be returned
 
         let testState = testForFinish(boardState);
 
         // first we test to see whether the hypothetical game is over
         // if so, return the score that this game ended in
         if (testState === 1) { // the game is over, the human player has won
+            // console.log('testState', testState, 'returned -1');
+
             return -1; // add -1 to the score for this round
         } else if (testState === 2) {
+            // console.log('testState', testState, 'returned 1');
+
             return 1; // add 1 to the score for this round
         } else if (testState === 0) { // it's a tie
+            // console.log('testState', testState, 'returned 0');
+
             return 0; // add 0 to the score for this round
         }
 
         findEmptyBoxes(boardState).forEach(box => {
-            // make a hypothetical move on the current state of the board
 
             let newBoardState = [ // new board
                 [0, 0, 0],
@@ -253,39 +278,49 @@
                 }
             }
 
+            // make a hypothetical move on the current state of the board
+            // by assigning the player's number to the current box under
+            // evaluation            
             newBoardState[box[0]][box[1]] = player;
 
             // switch the player to the opposite player
-            let oppositePlayer = 1;
+            let oppositePlayer = 2;
             if (player === 1) {
                 oppositePlayer = 2;
             } else {
                 oppositePlayer = 1;
             }
 
+            // find the best move for the opposite player in the next round
             scores.push(findBestMove(newBoardState, oppositePlayer));
+            moves.push(box);
         });
 
-        console.log(scores);
-
+        if (player === 2) { // the computer is the current player being tested
+            // find the index of the best score in the array
+            let highestScore = Math.max(...scores);
+            let bestMoveIndex = scores.indexOf(highestScore);
+            bestMove = moves[bestMoveIndex];
+            return highestScore; // send back the most likely outcome of this possibility
+        } else if (player === 1) { // the human is the current player being tested
+            // find the index of the worst score in the array
+            let lowestScore = Math.min(...scores);
+            let bestMoveIndex = scores.indexOf(lowestScore);
+            bestMove = moves[bestMoveIndex];
+            console.log('best move for human', bestMove);
+            return lowestScore;
+        }
     }
 
-    // makes a random move by the computer
+    // makes the best move possible by the computer
     function computerMove() {
 
-        // find all available moves by computer
-        const options = findEmptyBoxes(boardArray);
-        const allBoxes = $('.box');
-        // picks a random option
-        let choice = Math.round(Math.random() * (options.length - 1));
+        findBestMove(); // finds best move and stores the (first) best option in the bestMove variable
 
-        findBestMove(boardArray, activePlayer);
-
-        // convert the coordinates to the n-th number box to get the index in $('.box')
-        const index = convertCoordinatesToIndex(options[choice]);
+        const index = convertCoordinatesToIndex(bestMove);
 
         setTimeout(() => { // wait to make it appear as if computer is thinking
-            $(allBoxes[index]).addClass('clicked box-filled-2');
+            $($allBoxes[index]).addClass('clicked box-filled-2');
             addTokenToBoard(activePlayer, index); // computer will always be player 2
 
             gameState = testForFinish(boardArray);
