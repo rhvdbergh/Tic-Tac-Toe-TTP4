@@ -357,7 +357,7 @@
             } else {
                 togglePlayer();
             }
-        }, 1500); // end timeout
+        }, 3000); // end timeout
 
     }
 
@@ -424,33 +424,36 @@
     $boxes.on('click', (event) => {
         // only run logic if game is still in progress
         // otherwise user would still be able to click when game is over
+        // also, if this is a single player game and the computer is playing,
+        // one shouldn't be able to click the screen and place tokens - in that 
+        // case, the second part of the conditional below assures that clicks by 
+        // the user on boxes are ignored
         if (gameState === -1) {
+
             const box = event.target;
+            const index = $(box).index();
 
             if (!($(box).hasClass('clicked'))) {
                 if (activePlayer === 1) {
-                    $(box).addClass('box-filled-1');
-                } else {
-                    $(box).addClass('box-filled-2');
+                    $(box).addClass('box-filled-1 clicked');
+                    addTokenToBoard(activePlayer, index);
+                } else if (twoPlayerGame) { // only add this class if it's a human player!
+                    $(box).addClass('box-filled-2 clicked');
+                    addTokenToBoard(activePlayer, index);
                 }
-
-                $(box).addClass('clicked');
-
-                // place the token "on the board" by adding it to the boardArray
-                const index = $(box).index();
-                addTokenToBoard(activePlayer, index);
 
                 gameState = testForFinish(boardArray);
                 if (gameState >= 0) {
                     endScreen();
-                } else {
+                } else if (!twoPlayerGame && activePlayer === 1) {
+                    // if this is a single player game and the human player is
+                    // the one who clicked on a box, switch to the computer
+                    // but only toggle the player if it's the human's turn!
                     togglePlayer();
-                    // if this is a two player game, make the computer move
-                    // after the computer moved, if the game is not over, the 
-                    // human player will again become the active player
-                    if (!twoPlayerGame) {
-                        computerMove();
-                    }
+                    // then make the computer move
+                    computerMove(); // this function includes a call to togglePlayer() to switch back to human player
+                } else if (twoPlayerGame) {
+                    togglePlayer();
                 }
             }
         }
