@@ -270,4 +270,30 @@ h1 {
         margin: auto;
         margin-top: 2em;
     }
+    .boxes {
+        width: 100%;
+    }
+    .boxes .box {
+        width: 30%;
+        height: 100px;
+        background-size: 80px 80px;
+        margin-right: 5%;
+    }
+    .name_display {
+        font-size: 1.7em;
+    }
+    .screen-win p {
+        font-size: 2em;
+        font-weight: 700;
+        color: #fff;
+        position: relative;
+    }
+    .screen-win-one p:before {
+        content: "o";
+        top: 4.5rem;
+    }
+    .screen-win-one .button,
+    .screen-win-two .button {
+        margin-top: 70%;
+    }
 }
