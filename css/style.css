@@ -261,3 +261,13 @@ h1 {
 #p2_name_display.active {
     opacity: 1;
 }
+
+@media only screen and (max-width: 480px) {
+    .screen-start .button {
+        color: #54D17A;
+        display: block;
+        width: 90%;
+        margin: auto;
+        margin-top: 2em;
+    }
+}
